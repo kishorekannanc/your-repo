@@ -2,12 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                // Clone the GitHub repository
-                sh 'echo "checking"
-            }
-        }
 
         stage('Build') {
             steps {
@@ -48,5 +42,7 @@ pipeline {
                 to: 'kishorekannandevops@gmail.com'
             )
         }
+    }
+}
     }
 }
