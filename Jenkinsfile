@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'echo "Build the project..."'
+                sh 'echo "Build demo project..."'
                 
             }
         }
