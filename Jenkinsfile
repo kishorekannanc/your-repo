@@ -22,16 +22,5 @@ pipeline {
         }
     }
 
-    post {
-        success {
-            mail to: 'kishorekannandevops@gmail.com',
-                 subject: "Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "The build was successful!\n\nCheck it here: ${env.BUILD_URL}"
-        }
-        failure {
-            mail to: 'kishorekannandevops@gmail.com',
-                 subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "The build failed!\n\nCheck it here: ${env.BUILD_URL}"
-        }
-    }
+   
 }
