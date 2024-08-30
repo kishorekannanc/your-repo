@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     stages {
-
         stage('Build') {
             steps {
                 // Replace with your actual build steps
@@ -42,7 +41,5 @@ pipeline {
                 to: 'kishorekannandevops@gmail.com'
             )
         }
-    }
-}
     }
 }
