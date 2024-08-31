@@ -1,7 +1,7 @@
 pipeline {
     agent any
 
-    stages {
+    stages 
         stage('Build') {
             steps {
                 // Replace with your actual build steps
