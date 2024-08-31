@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 // Replace with your actual build steps
-                sh echo "Building the project..."'
+                sh 'echo "Building the project..."'
             }
         }
 
@@ -19,7 +19,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 // Replace with your deployment steps
-                sh 'echo "Deploying the application..."'
+                sh 'echo "Deploying the application...'
             }
         }
     }
