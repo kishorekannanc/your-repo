@@ -29,15 +29,15 @@ pipeline {
             // Send success email
             emailext(
                 subject: "SUCCESS: Build ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Good news! The build was successful.\n\n${env.BUILD_URL}",
-                to: 'kishorekannan0905@gmail.com'
+                body: "Good job! the is comepleted \n\n${env.BUILD_URL}",
+                to: 'kishorekannan0905@gmail.com , kishorekannandevops@gmail.com'
             )
         }
         failure {
             // Send failure email
             emailext(
                 subject: "FAILURE: Build ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Unfortunately, the build failed.\n\n${env.BUILD_URL}",
+                body: "Unfortunately, the build failed try to correct it and i am not sending is mail to client.\n\n${env.BUILD_URL}",
                 to: 'kishorekannandevops@gmail.com'
             )
         }
