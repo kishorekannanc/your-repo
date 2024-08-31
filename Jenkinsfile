@@ -1,8 +1,8 @@
 pipeline {
-    agent any{
+    agent any
 
-    stages 
-        stage('Build') {
+    stages {
+        stage('Build') 
             steps {
                 // Replace with your actual build steps
                 sh 'echo "Building the project..."'
