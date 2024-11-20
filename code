@@ -37,3 +37,287 @@
    37  docker login
    38  docker push kishorekannan23/devops-react-app:dev
    39  history
+
+
+
+To deploy the given React application to a production-ready state, the following steps will guide you through the process, including Dockerizing the app, using Jenkins for CI/CD, deploying to AWS, and setting up monitoring. Let's break it down step-by-step:
+
+---
+
+### **1. Clone the GitHub Repository:**
+
+First, clone the provided React application repo to your local machine:
+```bash
+git clone https://github.com/sriram-R-krishnan/devops-build.git
+cd devops-build
+```
+
+---
+
+### **2. Dockerize the React Application:**
+
+#### **Create a Dockerfile:**
+
+Create a `Dockerfile` in the root directory of the project.
+
+```Dockerfile
+# Step 1: Use a Node.js base image to build the React application
+FROM node:18 AS build
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Build the React app
+RUN npm run build
+
+# Step 2: Use an Nginx image to serve the built React application
+FROM nginx:alpine
+
+# Copy the build output to Nginx's serving directory
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Expose port 80 to access the application
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+#### **Create a `.dockerignore` File:**
+
+Add the `.dockerignore` file to avoid copying unnecessary files into the Docker image:
+```bash
+node_modules
+build
+.dockerignore
+.git
+.gitignore
+```
+
+---
+
+### **3. Docker Compose Setup:**
+
+Create a `docker-compose.yml` file for managing multi-container applications:
+
+```yaml
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+```
+
+---
+
+### **4. Bash Scripts:**
+
+#### **`build.sh`:**
+
+This script will build the Docker image.
+
+```bash
+#!/bin/bash
+
+# Build the Docker image
+docker build -t devops-react-app .
+
+# Tag the image for Docker Hub (use your Docker Hub username)
+docker tag devops-react-app username/devops-react-app:dev
+docker tag devops-react-app username/devops-react-app:prod
+
+# Push the image to Docker Hub
+docker push username/devops-react-app:dev
+```
+
+#### **`deploy.sh`:**
+
+This script will deploy the Docker image on the server.
+
+```bash
+#!/bin/bash
+
+# Pull the latest image from Docker Hub
+docker pull username/devops-react-app:prod
+
+# Run the Docker container on port 80
+docker run -d -p 80:80 username/devops-react-app:prod
+```
+
+---
+
+### **5. Version Control with Git:**
+
+- **Create a `dev` branch** for development:
+  ```bash
+  git checkout -b dev
+  ```
+
+- **Push to GitHub:**
+  ```bash
+  git add .
+  git commit -m "Dockerize React app"
+  git push origin dev
+  ```
+
+- **Add `.gitignore`** for ignoring node_modules and other unnecessary files:
+  ```bash
+  node_modules/
+  .env
+  .dockerignore
+  .gitignore
+  ```
+
+---
+
+### **6. Docker Hub Setup:**
+
+- Create two repositories on Docker Hub: `dev` (public) and `prod` (private).
+- Use `docker login` to authenticate.
+- Push the image to the `dev` repo:
+  ```bash
+  docker tag devops-react-app username/devops-react-app:dev
+  docker push username/devops-react-app:dev
+  ```
+
+- Push the image to the `prod` repo:
+  ```bash
+  docker tag devops-react-app username/devops-react-app:prod
+  docker push username/devops-react-app:prod
+  ```
+
+---
+
+### **7. Jenkins CI/CD Setup:**
+
+#### **Install Jenkins:**
+- Install Jenkins on a server, if not installed already. You can follow the official documentation [here](https://www.jenkins.io/doc/book/installing/).
+
+#### **Configure Jenkins:**
+
+- Install the required plugins such as Docker, GitHub Integration, and Pipeline.
+- Create a new pipeline job in Jenkins.
+- In the pipeline script, you can write something like:
+
+```groovy
+pipeline {
+    agent any
+    environment {
+        DOCKER_CREDENTIALS = 'dockerhub-credentials'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'dev', url: 'https://github.com/sriram-R-krishnan/devops-build.git'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh './build.sh'
+                }
+            }
+        }
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    sh 'docker push username/devops-react-app:dev'
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    sh './deploy.sh'
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Deployment failed!'
+        }
+    }
+}
+```
+
+- **Trigger Build Automatically** on changes to the `dev` branch.
+
+---
+
+### **8. AWS Setup:**
+
+#### **Launch EC2 Instance:**
+
+1. **Launch 12 micro instances** in AWS EC2.
+2. Configure the **Security Groups (SG)**:
+   - **Inbound Rule**: Allow HTTP (port 80) from any IP (`0.0.0.0/0`).
+   - **SSH Rule**: Allow SSH (port 22) from your IP address only.
+
+#### **Install Docker on EC2:**
+
+SSH into each EC2 instance and install Docker:
+
+```bash
+sudo apt-get update
+sudo apt-get install docker.io
+sudo systemctl enable --now docker
+```
+
+#### **Deploy the Application:**
+
+- Pull the `prod` image from Docker Hub:
+  ```bash
+  docker pull username/devops-react-app:prod
+  ```
+
+- Run the container:
+  ```bash
+  docker run -d -p 80:80 username/devops-react-app:prod
+  ```
+
+---
+
+### **9. Monitoring Setup:**
+
+You can set up open-source monitoring tools like **Prometheus** and **Grafana** or **Healthchecks.io** to monitor the health of your deployed application.
+
+- **Healthchecks.io**: Set up monitoring by sending periodic requests to your app's endpoint.
+- **Prometheus + Grafana**: Configure Prometheus to scrape metrics from your EC2 instances and visualize them in Grafana.
+
+---
+
+### **10. Submission:**
+
+- **GitHub Repo URL**: Share the GitHub repository URL where your code resides.
+- **Deployed Site URL**: Provide the URL of your deployed application on AWS.
+- **Docker Image Names**: Include the image tags for the `dev` and `prod` Docker Hub repositories.
+- **Screenshots**: Upload the following screenshots to the GitHub repository:
+  - Jenkins (login page, configuration settings, executed step commands).
+  - AWS EC2 Console and Security Group configurations.
+  - Docker Hub repositories with image tags.
+  - Deployed site page.
+  - Health check status.
+
+---
+
+This guide covers the process to dockerize, deploy, and automate CI/CD for the application using Jenkins, Docker, AWS, and monitoring. Make sure to adapt paths, usernames, and repository names to your own setup.
