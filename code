@@ -1,0 +1,39 @@
+    1  sudo apt update
+    2  sudo apt install docker.io
+    3  docker version
+    4  sudo systemctl start docker
+    5  sudo systemctl enable docker
+    6  docker -v
+    7  VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)
+    8  sudo curl -L "https://github.com/docker/compose/releases/download/${VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    9  VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)
+   10  sudo curl -L "https://github.com/docker/compose/releases/download/${VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+   11  sudo chmod +x /usr/local/bin/docker-compose
+   12  docker-compose --version
+   13  git clone https://github.com/kishorekannanc/test.git
+   14  ls
+   15  cd test
+   16  ls
+   17  vi build.sh
+   18  vi deploy.sh
+   19  git checkout -b dev
+   20  git add .
+   21  git commit -m "Dockerize React app"
+   22  git push origin dev
+   23  node_modules/
+   24  .env
+   25  .dockerignore
+   26  .gitignore
+   27  vi .gitignore
+   28  git add .
+   29  git commit -m "gg"
+   30  git push origin dev
+   31  docker tag devops-react-app kishorekannan23/devops-react-app:dev
+   32  docker push kishorekannan23/devops-react-app:dev
+   33  docker build -t devops-react-app .
+   34  docker images
+   35  docker tag devops-react-app:latest kishorekannan23/devops-react-app:dev
+   36  docker push kishorekannan23/devops-react-app:dev
+   37  docker login
+   38  docker push kishorekannan23/devops-react-app:dev
+   39  history
