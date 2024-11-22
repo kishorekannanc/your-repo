@@ -19,25 +19,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 // Intentional failure to trigger the failure email
-                sh 'exit 1'
+                sh 'echo "deploy"'
             }
         }
     }
 
-    post {
-        success {
-            emailext(
-                subject: "SUCCESS: Build ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Good job! The build was successful.\n\n${env.BUILD_URL}",
-                to: 'kishorekannan0905@gmail.com,kishorekannandevops@gmail.com'
-            )
-        }
-        failure {
-            emailext(
-                subject: "FAILURE: Build ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Unfortunately, the build failed. Please check the details and correct the issue.\n\n${env.BUILD_URL}",
-                to: 'kishorekannandevops@gmail.com'
-            )
-        }
-    }
+    
 }
