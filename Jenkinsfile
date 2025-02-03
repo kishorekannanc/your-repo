@@ -12,7 +12,7 @@ pipeline {
         stage('Test') {
             steps {
                 // Replace with your test commands
-                sh 'echo "Vickey tests..."'
+                sh 'echo "Running tests..."'
             }
         }
 
