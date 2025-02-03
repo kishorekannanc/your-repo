@@ -19,7 +19,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 // Intentional failure to trigger the failure email
-                sh 'echo "deploy"'
+                sh 'echo "KKKKKKploy"'
             }
         }
     }
